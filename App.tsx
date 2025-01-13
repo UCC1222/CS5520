@@ -1,12 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { Button } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Header from './components/Header';
+import Input from './components/Input';
 
 export default function App() {
+  const appName = "CC's APP";
+
   return (
     <View style={styles.container}>
-      <Text>Welcome to CC's APP!</Text>
-      <Button title="Click Me" onPress={() => alert('Button Pressed!')} />
+      <Header appName={appName} />
+      <Input /> {/* Render the Input component */}
+      {/* <Text>You typed: {text}</Text> */} {/* Commented out as per instructions */}
       <StatusBar style="auto" />
     </View>
   );
@@ -18,10 +22,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    padding: 20,
   },
 });

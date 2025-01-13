@@ -6,6 +6,8 @@
   "paths": {
     "@/*": [
       "./*"
-    ]
+    ],
+    "noImplicitAny": true,
+    "strictNullChecks": true,
   }
 }
