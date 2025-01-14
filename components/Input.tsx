@@ -20,18 +20,42 @@ export default function Input({ autoFocus }: { autoFocus: boolean }) {
         placeholder="Type something..."
         value={inputText}
         onChangeText={(text) => setInputText(text)}
+        onFocus={() => setHasFocus(true)}
+        onBlur={() => setHasFocus(false)}
       />
-      {inputText.length > 0 && (
+      {hasFocus && inputText.length > 0 && (
         <Text style={styles.counter}>Character count: {inputText.length}</Text>
+      )}
+      {!hasFocus && inputText.length > 0 && (
+        <Text style={styles.message}>
+          {inputText.length >= 3
+            ? 'Thank you'
+            : 'Please type more than 3 characters'}
+        </Text>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  counter: {
-    fontSize: 14,
-    color: 'gray',
-    marginTop: 5,
-  },
-});
+    container: {
+      padding: 10,
+      width: '100%',
+    },
+    input: {
+      height: 40,
+      borderColor: 'gray',
+      borderWidth: 1,
+      paddingHorizontal: 10,
+      borderRadius: 5,
+      marginBottom: 10,
+    },
+    counter: {
+      fontSize: 14,
+      color: 'gray',
+    },
+    message: {
+      fontSize: 14,
+      color: 'blue',
+    },
+  });
