@@ -12,25 +12,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    width: '90%',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  counter: {
-    fontSize: 14,
-    color: 'gray',
-    marginTop: 5,
-  },
-  message: {
-    fontSize: 14,
-    color: 'blue',
-    marginTop: 5,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
