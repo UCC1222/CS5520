@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 
 export default function Input() {
-  const [inputText, setInputText] = useState(''); // State for TextInput
-
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Type something..."
-        value={inputText} // Controlled by state
-        onChangeText={(text) => setInputText(text)} // Updates state
-      />
+      <TextInput style={styles.input} placeholder="Type something..." />
     </View>
   );
 }
@@ -19,6 +12,7 @@ export default function Input() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    width: '100%',
   },
   input: {
     height: 40,
