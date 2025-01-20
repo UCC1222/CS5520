@@ -1,3 +1,4 @@
+ 
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, Text, Button } from 'react-native';
 import Input from './components/Input';
@@ -28,12 +29,14 @@ export default function App() {
         inputHandler={handleInputData}
       />
     </SafeAreaView>
+ 
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+ 
     backgroundColor: '#fff',
   },
   headerSection: {
@@ -57,5 +60,6 @@ const styles = StyleSheet.create({
   bottomText: {
     fontSize: 16,
     color: 'blue',
+ 
   },
 });

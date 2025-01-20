@@ -1,3 +1,4 @@
+ 
 import React, { useState } from 'react';
 import { Modal, Button, StyleSheet, TextInput, View, Text } from 'react-native';
 
@@ -10,6 +11,8 @@ interface InputProps {
 
 export default function Input({ modalVisible, textInputFocus, inputHandler }: InputProps) {
   const [inputText, setInputText] = useState(''); // State for TextInput
+ 
+ 
 
   // Function to handle the Submit button press
   const handleSubmit = () => {
@@ -18,6 +21,7 @@ export default function Input({ modalVisible, textInputFocus, inputHandler }: In
   };
 
   return (
+ 
     <Modal visible={modalVisible} animationType="slide" transparent={true}>
       <View style={styles.container}>
         {/* Inner box with rounded corners */}
@@ -40,6 +44,7 @@ export default function Input({ modalVisible, textInputFocus, inputHandler }: In
 }
 
 const styles = StyleSheet.create({
+ 
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -74,3 +79,4 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 });
+ 
