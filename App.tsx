@@ -5,12 +5,17 @@ import Input from './components/Input';
 
 
 export default function App() {
-  const [text, setText] = useState('Study'); // Default text
+  const [text, setText] = useState('Study');
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
+  
   const handleInputData = (input: string) => {
     setText(input); // Update the goal text
     setIsModalVisible(false); // Close the modal
   };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  }
   return (
     <SafeAreaView style={styles.container}>
       {/* Header and Button Section */}
@@ -27,6 +32,7 @@ export default function App() {
         modalVisible={isModalVisible}
         textInputFocus={true}
         inputHandler={handleInputData}
+        onCancel={handleCancel}
       />
     </SafeAreaView>
  
@@ -36,7 +42,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
- 
     backgroundColor: '#fff',
   },
   headerSection: {
