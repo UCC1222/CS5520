@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, Button } from 'react-native';
-import Header from './components/Header';
+import { SafeAreaView, StyleSheet, View, Text, Button } from 'react-native';
 import Input from './components/Input';
 
-export default function App() {
-  const appName = "CC's APP";
-  const [text, setText] = useState(''); // State to store the input data
-  const [isModalVisible, setModalVisible] = useState(false); // State to control the modal visibility
-  // Callback function to handle the input text
-  function handleInputData(input: string): void {
-    setText(input); // Update the state with the received input
-    setModalVisible(false); // Close the modal
-  }
 
+export default function App() {
+  const [text, setText] = useState('Study'); // Default text
+  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
+  const handleInputData = (input: string) => {
+    setText(input); // Update the goal text
+    setIsModalVisible(false); // Close the modal
+  };
   return (
-    <View style={styles.container}>
-      <Button title="Add a goal" onPress={() => setModalVisible(true)} />
-      <Header appName={appName} />
-      {/* Pass props to Input */}
-      <Input textInputFocus={true} inputHandler={handleInputData} modalVisible={isModalVisible}/>
-      {/* Uncomment Text to display the input */}
-      <Text>You typed: {text}</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      {/* Header and Button Section */}
+      <View style={styles.headerSection}>
+        <Text style={styles.headerText}>Welcome to My awesome app</Text>
+        <Button title="ADD A GOAL" onPress={() => setIsModalVisible(true)} />
+      </View>
+
+      {/* Bottom Section */}
+      <View style={styles.bottomSection}>
+        <Text style={styles.bottomText}>{text}</Text>
+      </View>
+      <Input
+        modalVisible={isModalVisible}
+        textInputFocus={true}
+        inputHandler={handleInputData}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -31,8 +35,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
+  },
+  headerSection: {
+    flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'purple',
+    marginBottom: 10,
+  },
+
+  bottomSection: {
+    flex: 4,
+    backgroundColor: '#d8bfd8', 
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  bottomText: {
+    fontSize: 16,
+    color: 'blue',
   },
 });
