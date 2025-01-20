@@ -49,10 +49,10 @@ export default function Input({ modalVisible, textInputFocus, inputHandler, onCa
             autoFocus={textInputFocus}
           />
           <View style={styles.buttonContainer}>
-            <View style={styles.button}>
+            <View style={styles.buttonWrapper}>
               <Button title="Cancel" onPress={handleCancel} color="red" />
             </View>
-            <View style={styles.button}>
+            <View style={styles.buttonWrapper}>
               <Button title="Confirm" onPress={handleSubmit} />
             </View>
           </View>
@@ -95,10 +95,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',  
     width: '100%',
-    marginTop: 10,
+    gap: 20,
   },
-  button: {
+  buttonWrapper: {
+    flex:1,
     width: '45%',
   },
 });
