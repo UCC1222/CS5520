@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { Button, StyleSheet, TextInput, View } from 'react-native';
 
 export default function Input() {
   const [inputText, setInputText] = useState(''); // State for TextInput
@@ -12,6 +12,7 @@ export default function Input() {
         value={inputText} // Controlled by state
         onChangeText={(text) => setInputText(text)} // Updates state
       />
+      <Button title="Submit" onPress={() => console.log(inputText)} />
     </View>
   );
 }
