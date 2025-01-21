@@ -1,19 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Modal, Button, StyleSheet, TextInput, View, Text, Alert } from 'react-native';
 
 interface InputProps {
   modalVisible: boolean;
   textInputFocus: boolean;
   inputHandler: (text: string) => void;
-  onCancel: () => void;  // New prop for handling cancel
+  onCancel: () => void;
+  minLength?: number; // Optional prop for minimum length requirement
 }
 
-export default function Input({ modalVisible, textInputFocus, inputHandler, onCancel }: InputProps) {
+export default function Input({ 
+  modalVisible, 
+  textInputFocus, 
+  inputHandler, 
+  onCancel,
+  minLength = 3 // Default minimum length of 3 characters
+}: InputProps) {
   const [inputText, setInputText] = useState('');
 
+  // Compute if the input is valid using useMemo to optimize performance
+  const isInputValid = useMemo(() => {
+    return inputText.trim().length >= minLength;
+  }, [inputText, minLength]);
+
   const handleSubmit = () => {
-    inputHandler(inputText);
-    setInputText('');
+    if (isInputValid) {
+      inputHandler(inputText);
+      setInputText('');
+    }
   };
 
   const handleCancel = () => {
@@ -28,8 +42,8 @@ export default function Input({ modalVisible, textInputFocus, inputHandler, onCa
         {
           text: "OK",
           onPress: () => {
-            setInputText('');  // Clear the input
-            onCancel();  // Call the callback to close modal
+            setInputText('');
+            onCancel();
           }
         }
       ]
@@ -43,17 +57,36 @@ export default function Input({ modalVisible, textInputFocus, inputHandler, onCa
           <Text style={styles.title}>Enter Your Goal</Text>
           <TextInput
             style={styles.input}
-            placeholder="Type your goal..."
+            placeholder={`Type your goal (min ${minLength} characters)...`}
             value={inputText}
             onChangeText={(text) => setInputText(text)}
             autoFocus={textInputFocus}
           />
+          {/* Helper text to show minimum length requirement */}
+          <Text style={[
+            styles.helperText,
+            { color: isInputValid ? 'green' : 'red' }
+          ]}>
+            {isInputValid 
+              ? '✓ Valid input'
+              : `${minLength - inputText.trim().length} more characters needed`
+            }
+          </Text>
           <View style={styles.buttonContainer}>
             <View style={styles.buttonWrapper}>
-              <Button title="Cancel" onPress={handleCancel} color="red" />
+              <Button 
+                title="Cancel" 
+                onPress={handleCancel} 
+                color="red" 
+              />
             </View>
             <View style={styles.buttonWrapper}>
-              <Button title="Confirm" onPress={handleSubmit} />
+              <Button 
+                title="Confirm" 
+                onPress={handleSubmit}
+                disabled={!isInputValid}
+                color={isInputValid ? undefined : '#cccccc'}
+              />
             </View>
           </View>
         </View>
@@ -90,17 +123,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 8, // Reduced to make room for helper text
+  },
+  helperText: {
+    fontSize: 12,
+    marginBottom: 12,
+    alignSelf: 'flex-start',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',  
+    alignItems: 'center',
     width: '100%',
     gap: 20,
   },
   buttonWrapper: {
-    flex:1,
-    width: '45%',
+    flex: 1,
+    maxWidth: '45%',
   },
 });
