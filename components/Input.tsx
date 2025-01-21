@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from 'react';
-import { Modal, Button, StyleSheet, TextInput, View, Text, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, Button, StyleSheet, TextInput, View, Text, Alert, Image } from 'react-native';
 
 interface InputProps {
   modalVisible: boolean;
   textInputFocus: boolean;
   inputHandler: (text: string) => void;
   onCancel: () => void;
-  minLength?: number; // Optional prop for minimum length requirement
+  minLength?: number;
 }
 
 export default function Input({ 
@@ -14,14 +14,11 @@ export default function Input({
   textInputFocus, 
   inputHandler, 
   onCancel,
-  minLength = 3 // Default minimum length of 3 characters
+  minLength = 3 
 }: InputProps) {
   const [inputText, setInputText] = useState('');
-
-  // Compute if the input is valid using useMemo to optimize performance
-  const isInputValid = useMemo(() => {
-    return inputText.trim().length >= minLength;
-  }, [inputText, minLength]);
+  
+  const isInputValid = inputText.trim().length >= minLength;
 
   const handleSubmit = () => {
     if (isInputValid) {
@@ -55,6 +52,21 @@ export default function Input({
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Text style={styles.title}>Enter Your Goal</Text>
+          
+          {/* Image container */}
+          <View style={styles.imageContainer}>
+            <Image 
+              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2617/2617812.png' }}
+              style={styles.image}
+              accessibilityLabel="Target icon from network"
+            />
+            <Image 
+              source={require('../assets/target-icon.png')}  // Assuming you saved the image as target-icon.png in assets folder
+              style={styles.image}
+              accessibilityLabel="Target icon from local assets"
+            />
+          </View>
+
           <TextInput
             style={styles.input}
             placeholder={`Type your goal (min ${minLength} characters)...`}
@@ -62,7 +74,6 @@ export default function Input({
             onChangeText={(text) => setInputText(text)}
             autoFocus={textInputFocus}
           />
-          {/* Helper text to show minimum length requirement */}
           <Text style={[
             styles.helperText,
             { color: isInputValid ? 'green' : 'red' }
@@ -116,6 +127,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  imageContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  image: {
+    width: 100,
+    height: 100,
+  },
   input: {
     height: 40,
     borderColor: 'gray',
@@ -123,7 +144,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     width: '100%',
-    marginBottom: 8, // Reduced to make room for helper text
+    marginBottom: 8,
   },
   helperText: {
     fontSize: 12,
