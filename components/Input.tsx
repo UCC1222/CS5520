@@ -1,41 +1,104 @@
- 
 import React, { useState } from 'react';
-import { Modal, Button, StyleSheet, TextInput, View, Text } from 'react-native';
+import { Modal, Button, StyleSheet, TextInput, View, Text, Alert, Image } from 'react-native';
 
-// Define the props interface
 interface InputProps {
-  modalVisible: boolean; // Boolean to control visibility
-  textInputFocus: boolean; // Boolean to control focus
-  inputHandler: (text: string) => void; // Callback to handle input text
+  modalVisible: boolean;
+  textInputFocus: boolean;
+  inputHandler: (text: string) => void;
+  onCancel: () => void;
+  minLength?: number;
 }
 
-export default function Input({ modalVisible, textInputFocus, inputHandler }: InputProps) {
-  const [inputText, setInputText] = useState(''); // State for TextInput
- 
- 
+export default function Input({ 
+  modalVisible, 
+  textInputFocus, 
+  inputHandler, 
+  onCancel,
+  minLength = 3 
+}: InputProps) {
+  const [inputText, setInputText] = useState('');
+  
+  const isInputValid = inputText.trim().length >= minLength;
 
-  // Function to handle the Submit button press
   const handleSubmit = () => {
-    inputHandler(inputText); // Call the callback function with input text
-    setInputText(''); // Clear the input field
+    if (isInputValid) {
+      inputHandler(inputText);
+      setInputText('');
+    }
+  };
+
+  const handleCancel = () => {
+    Alert.alert(
+      "Cancel",
+      "Are you sure you want to cancel?",
+      [
+        {
+          text: "No",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            setInputText('');
+            onCancel();
+          }
+        }
+      ]
+    );
   };
 
   return (
- 
     <Modal visible={modalVisible} animationType="slide" transparent={true}>
       <View style={styles.container}>
-        {/* Inner box with rounded corners */}
         <View style={styles.innerContainer}>
           <Text style={styles.title}>Enter Your Goal</Text>
+          
+          {/* Image container */}
+          <View style={styles.imageContainer}>
+            <Image 
+              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2617/2617812.png' }}
+              style={styles.image}
+              accessibilityLabel="Target icon from network"
+            />
+            <Image 
+              source={require('../assets/target-icon.png')}  // Assuming you saved the image as target-icon.png in assets folder
+              style={styles.image}
+              accessibilityLabel="Target icon from local assets"
+            />
+          </View>
+
           <TextInput
             style={styles.input}
-            placeholder="Type your goal..."
-            value={inputText} // Controlled by state
-            onChangeText={(text) => setInputText(text)} // Update state on input change
-            autoFocus={textInputFocus} // Set focus if textInputFocus is true
+            placeholder={`Type your goal (min ${minLength} characters)...`}
+            value={inputText}
+            onChangeText={(text) => setInputText(text)}
+            autoFocus={textInputFocus}
           />
+          <Text style={[
+            styles.helperText,
+            { color: isInputValid ? 'green' : 'red' }
+          ]}>
+            {isInputValid 
+              ? '✓ Valid input'
+              : `${minLength - inputText.trim().length} more characters needed`
+            }
+          </Text>
           <View style={styles.buttonContainer}>
-            <Button title="Confirm" onPress={handleSubmit} />
+            <View style={styles.buttonWrapper}>
+              <Button 
+                title="Cancel" 
+                onPress={handleCancel} 
+                color="red" 
+              />
+            </View>
+            <View style={styles.buttonWrapper}>
+              <Button 
+                title="Confirm" 
+                onPress={handleSubmit}
+                disabled={!isInputValid}
+                color={isInputValid ? undefined : '#cccccc'}
+              />
+            </View>
           </View>
         </View>
       </View>
@@ -44,12 +107,11 @@ export default function Input({ modalVisible, textInputFocus, inputHandler }: In
 }
 
 const styles = StyleSheet.create({
- 
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)', // Transparent background for Modal
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   innerContainer: {
     width: '80%',
@@ -65,6 +127,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  imageContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  image: {
+    width: 100,
+    height: 100,
+  },
   input: {
     height: 40,
     borderColor: 'gray',
@@ -72,11 +144,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 8,
+  },
+  helperText: {
+    fontSize: 12,
+    marginBottom: 12,
+    alignSelf: 'flex-start',
   },
   buttonContainer: {
-    width: '30%',
-    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    gap: 20,
+  },
+  buttonWrapper: {
+    flex: 1,
+    maxWidth: '45%',
   },
 });
- 
