@@ -35,7 +35,11 @@ export default function App() {
 
       {/* Bottom Section */}
       <View style={styles.bottomSection}>
-        <Text style={styles.bottomText}>{text}</Text>
+      {goals.map((goal) => (
+          <View key={goal.id} style={styles.goalItem}>
+            <Text>{goal.text}</Text>
+          </View>
+        ))}
       </View>
       <Input
         modalVisible={isModalVisible}
@@ -71,9 +75,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  bottomText: {
-    fontSize: 16,
-    color: 'blue',
- 
+  goalItem: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#f9c2ff',
+    borderRadius: 5,
   },
 });
