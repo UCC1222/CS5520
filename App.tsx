@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, Button, FlatList } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
 import Input from './components/Input';
 import GoalItem, { Goal } from './components/GoalItem';
 
@@ -42,6 +42,34 @@ export default function App() {
             goals.length > 0 ? (
               <View style={styles.headerContainer}>
                 <Text style={styles.listHeaderText}>My Goals</Text>
+              </View>
+            ) : null
+          }
+
+          ListFooterComponent={
+            goals.length > 0 ? (
+              <View style={styles.footerContainer}>
+                <Button
+                  title="Delete All"
+                  color="blue"
+                  onPress={() =>{
+                    Alert.alert(
+                      'Delete All Goals',
+                      'Are you sure you want to delete all goals?',
+                      [
+                        {
+                          text: 'No',
+                          style: 'cancel',
+                        },
+                        {
+                          text: 'Yes',
+                          onPress: () => setGoals([]),
+                          style: 'destructive',
+                        },
+                      ]
+                    )
+                  }}
+                />
               </View>
             ) : null
           }
@@ -106,5 +134,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'purple',
+  },
+  footerContainer: {
+    width: '100%',
+    padding: 20,
+    alignItems: 'center',
   }
 });
