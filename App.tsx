@@ -38,8 +38,13 @@ export default function App() {
           data={goals} // Array of items to render
           keyExtractor={(item) => item.id.toString()} // Unique key for each item
           renderItem={({ item }) => <GoalItem goal={item} deleteGoal={deleteGoal}/>} // Render GoalItem
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No goals to show</Text>
+            </View>
+          }
           contentContainerStyle={{ alignItems: 'center' }} // Style for container
-          style={{ flex: 1 }} // 确保 FlatList 填满父容器
+          style={{ flex: 1 }}
         />
       </View>
 
@@ -73,4 +78,15 @@ const styles = StyleSheet.create({
     flex: 4,
     backgroundColor: '#d8bfd8',
   },
+  
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    color: 'purple',
+    marginTop: 20,
+  }
 });
