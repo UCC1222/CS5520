@@ -1,18 +1,12 @@
- 
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, Button } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, Button, FlatList } from 'react-native';
 import Input from './components/Input';
-
-export interface Goal {
-  text: string;
-  id: number;
-}
+import GoalItem, { Goal } from './components/GoalItem';
 
 export default function App() {
-  const [text, setText] = useState('Study');
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
-  
+
   const handleInputData = (input: string) => {
     const newGoal: Goal = {
       text: input,
@@ -24,7 +18,8 @@ export default function App() {
 
   const handleCancel = () => {
     setIsModalVisible(false);
-  }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header and Button Section */}
@@ -33,14 +28,17 @@ export default function App() {
         <Button title="ADD A GOAL" onPress={() => setIsModalVisible(true)} />
       </View>
 
-      {/* Bottom Section */}
+      {/* Goals List */}
       <View style={styles.bottomSection}>
-      {goals.map((goal) => (
-          <View key={goal.id} style={styles.goalItem}>
-            <Text>{goal.text}</Text>
-          </View>
-        ))}
+        <FlatList
+          data={goals} // Array of items to render
+          keyExtractor={(item) => item.id.toString()} // Unique key for each item
+          renderItem={({ item }) => <GoalItem goal={item} />} // Render GoalItem
+          contentContainerStyle={{ alignItems: 'center' }} // Style for container
+          style={{ flex: 1 }} // 确保 FlatList 填满父容器
+        />
       </View>
+
       <Input
         modalVisible={isModalVisible}
         textInputFocus={true}
@@ -48,7 +46,6 @@ export default function App() {
         onCancel={handleCancel}
       />
     </SafeAreaView>
- 
   );
 }
 
@@ -68,17 +65,8 @@ const styles = StyleSheet.create({
     color: 'purple',
     marginBottom: 10,
   },
-
   bottomSection: {
     flex: 4,
-    backgroundColor: '#d8bfd8', 
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  goalItem: {
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#f9c2ff',
-    borderRadius: 5,
+    backgroundColor: '#d8bfd8',
   },
 });
