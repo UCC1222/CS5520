@@ -38,6 +38,14 @@ export default function App() {
           data={goals} // Array of items to render
           keyExtractor={(item) => item.id.toString()} // Unique key for each item
           renderItem={({ item }) => <GoalItem goal={item} deleteGoal={deleteGoal}/>} // Render GoalItem
+          ListHeaderComponent={
+            goals.length > 0 ? (
+              <View style={styles.headerContainer}>
+                <Text style={styles.listHeaderText}>My Goals</Text>
+              </View>
+            ) : null
+          }
+
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>No goals to show</Text>
@@ -88,5 +96,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'purple',
     marginTop: 20,
+  },
+  headerContainer: {
+    width: '100%',
+    padding: 20,
+    alignItems: 'center',
+  },
+  listHeaderText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'purple',
   }
 });
