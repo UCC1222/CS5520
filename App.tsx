@@ -1,21 +1,29 @@
- 
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, Button } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, Button, FlatList } from 'react-native';
 import Input from './components/Input';
-
+import GoalItem, { Goal } from './components/GoalItem';
 
 export default function App() {
-  const [text, setText] = useState('Study');
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
-  
+
   const handleInputData = (input: string) => {
-    setText(input); // Update the goal text
-    setIsModalVisible(false); // Close the modal
+    const newGoal: Goal = {
+      text: input,
+      id: Math.random(),
+    };
+    setGoals((prevGoals) => [...prevGoals, newGoal]);
+    setIsModalVisible(false);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
-  }
+  };
+
+  const deleteGoal = (id: number) => {
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== id));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header and Button Section */}
@@ -24,10 +32,17 @@ export default function App() {
         <Button title="ADD A GOAL" onPress={() => setIsModalVisible(true)} />
       </View>
 
-      {/* Bottom Section */}
+      {/* Goals List */}
       <View style={styles.bottomSection}>
-        <Text style={styles.bottomText}>{text}</Text>
+        <FlatList
+          data={goals} // Array of items to render
+          keyExtractor={(item) => item.id.toString()} // Unique key for each item
+          renderItem={({ item }) => <GoalItem goal={item} deleteGoal={deleteGoal}/>} // Render GoalItem
+          contentContainerStyle={{ alignItems: 'center' }} // Style for container
+          style={{ flex: 1 }} // 确保 FlatList 填满父容器
+        />
       </View>
+
       <Input
         modalVisible={isModalVisible}
         textInputFocus={true}
@@ -35,7 +50,6 @@ export default function App() {
         onCancel={handleCancel}
       />
     </SafeAreaView>
- 
   );
 }
 
@@ -55,16 +69,8 @@ const styles = StyleSheet.create({
     color: 'purple',
     marginBottom: 10,
   },
-
   bottomSection: {
     flex: 4,
-    backgroundColor: '#d8bfd8', 
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  bottomText: {
-    fontSize: 16,
-    color: 'blue',
- 
+    backgroundColor: '#d8bfd8',
   },
 });
