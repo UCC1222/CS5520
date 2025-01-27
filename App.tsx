@@ -3,14 +3,23 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, Text, Button } from 'react-native';
 import Input from './components/Input';
 
+export interface Goal {
+  text: string;
+  id: number;
+}
 
 export default function App() {
   const [text, setText] = useState('Study');
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
   
   const handleInputData = (input: string) => {
-    setText(input); // Update the goal text
-    setIsModalVisible(false); // Close the modal
+    const newGoal: Goal = {
+      text: input,
+      id: Math.random(),
+    };
+    setGoals((prevGoals) => [...prevGoals, newGoal]);
+    setIsModalVisible(false);
   };
 
   const handleCancel = () => {
