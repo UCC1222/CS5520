@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import Goal from '../App';
 
 export interface Goal {
   text: string;
@@ -8,24 +9,32 @@ export interface Goal {
 
 interface GoalItemProps {
   goal: Goal;
+  deleteGoal: (id: number) => void;
 }
 
-const GoalItem: React.FC<GoalItemProps> = ({ goal }) => {
-  return (
-    <View style={styles.goalItem}>
-      <Text>{goal.text}</Text>
-    </View>
-  );
-};
+const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
+    return (
+      <View style={styles.goalItem}>
+        <Text style={styles.goalText}>{goal.text}</Text>
+        <Button title="X" color="red" onPress={() => deleteGoal(goal.id)} />
+      </View>
+    );
+  };
 
 const styles = StyleSheet.create({
-  goalItem: {
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#f9c2ff',
-    borderRadius: 5,
-    width: '90%', // Ensure consistent width
-  },
-});
+    goalItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 10,
+      marginVertical: 5,
+      backgroundColor: '#f9c2ff',
+      borderRadius: 5,
+      width: '90%',
+      justifyContent: 'space-between',
+    },
+    goalText: {
+      fontSize: 16,
+    },
+  });
 
 export default GoalItem;

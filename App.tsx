@@ -20,6 +20,10 @@ export default function App() {
     setIsModalVisible(false);
   };
 
+  const deleteGoal = (id: number) => {
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== id));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header and Button Section */}
@@ -33,7 +37,7 @@ export default function App() {
         <FlatList
           data={goals} // Array of items to render
           keyExtractor={(item) => item.id.toString()} // Unique key for each item
-          renderItem={({ item }) => <GoalItem goal={item} />} // Render GoalItem
+          renderItem={({ item }) => <GoalItem goal={item} deleteGoal={deleteGoal}/>} // Render GoalItem
           contentContainerStyle={{ alignItems: 'center' }} // Style for container
           style={{ flex: 1 }} // 确保 FlatList 填满父容器
         />
