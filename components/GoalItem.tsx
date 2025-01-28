@@ -26,11 +26,12 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       padding: 10,
-      marginVertical: 5,
       backgroundColor: '#f9c2ff',
       borderRadius: 5,
       width: '90%',
       justifyContent: 'space-between',
+      alignSelf: 'center', 
+      marginVertical: 8,
     },
     goalText: {
       fontSize: 16,
