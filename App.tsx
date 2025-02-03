@@ -1,28 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
 import Input from './components/Input';
 import GoalItem, { Goal } from './components/GoalItem';
+import { onSnapshot, collection } from 'firebase/firestore';
+import {database} from './Firebase/firebaseSetup';
+import { writeToDB, deleteFromDB, deleteAllFromDB } from './Firebase/firestoreHelper';
+
 
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
+  
   const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(database, 'goals'), (querySnapshot) => {
+      const goalsData: Goal[] = [];
+      querySnapshot.forEach((doc) => {
+        goalsData.push({ id: doc.id, text: doc.data().text });
+      });
+      setGoals(goalsData);
+    });
 
-  const handleInputData = (input: string) => {
-    const newGoal: Goal = {
+    // Cleanup listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  const handleInputData = async (input: string) => {
+    const newGoal : Goal = { 
       text: input,
-      id: Math.random(),
-    };
-    setGoals((prevGoals) => [...prevGoals, newGoal]);
-    setIsModalVisible(false);
+      id: Math.random().toString()}; 
+
+    try {
+      await writeToDB(newGoal, "goals");
+      setIsModalVisible(false);
+    } catch (error) {
+      Alert.alert("Error", "Failed to add goal. Please try again.");
+      console.error("Error adding goal to Firestore:", error);
+    }
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  const deleteGoal = (id: number) => {
-    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== id));
+  const deleteGoal = async (id: string) => {
+    try{
+      await deleteFromDB(id, 'goals');
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete goal. Please try again.");
+      console.error("Error deleting goal from Firestore:", error);
+    }
   };
+
+  const deleteAllGoals = async () => {
+    try{
+      await deleteAllFromDB('goals');
+    } catch (error) {
+      Alert.alert("Error", "Failed to delete all goals. Please try again.");
+      console.error("Error deleting all goals from Firestore:", error);
+    }
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,23 +92,7 @@ export default function App() {
                 <Button
                   title="Delete All"
                   color="blue"
-                  onPress={() =>{
-                    Alert.alert(
-                      'Delete All Goals',
-                      'Are you sure you want to delete all goals?',
-                      [
-                        {
-                          text: 'No',
-                          style: 'cancel',
-                        },
-                        {
-                          text: 'Yes',
-                          onPress: () => setGoals([]),
-                          style: 'destructive',
-                        },
-                      ]
-                    )
-                  }}
+                  onPress={deleteAllGoals}
                 />
               </View>
             ) : null
