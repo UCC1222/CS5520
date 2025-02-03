@@ -4,12 +4,12 @@ import Goal from '../App';
 
 export interface Goal {
   text: string;
-  id: number;
+  id: string;
 }
 
-interface GoalItemProps {
+export interface GoalItemProps {
   goal: Goal;
-  deleteGoal: (id: number) => void;
+  deleteGoal: (id: string) => void;
 }
 
 const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
