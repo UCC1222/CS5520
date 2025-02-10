@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { readDocFromDB } from '../../Firebase/firestoreHelper';
 
 export default function GoalDetails() {
@@ -22,7 +22,7 @@ export default function GoalDetails() {
   }, [id]);
   return (
     <View>
-      <Text>Goal Details</Text>
+      <Stack.Screen options={{headerTitle: goalText || "Goal Details"}} />
       <Text>{goalText ? goalText : "Loading..."}</Text> 
     </View>
   );

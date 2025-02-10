@@ -11,12 +11,15 @@ export default function RootLayout() {
     >
       <Stack.Screen 
         name="index" 
-        options={{ title: "Home" }} 
+        options={{ title: "All My Goals" }} 
       />
 
-      <Stack.Screen 
+<Stack.Screen 
         name="goals/[id]" 
-        options={{ title: "Goal Details" }} 
+        options={{ 
+          title: "Goal Details",
+          headerBackTitle: "All My Goals", 
+        }} 
       />
     </Stack>
   );
