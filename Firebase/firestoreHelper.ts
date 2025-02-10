@@ -1,9 +1,19 @@
-import { collection, addDoc, deleteDoc, doc, getDocs, getDoc} from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, getDocs, getDoc, updateDoc} from 'firebase/firestore';
 import { database } from './firebaseSetup';
 
 export interface Goal {
   id: string;
   text: string;
+}
+
+export async function updateDB(id: string, collectionName: string, data: object) {
+  try {
+    const docRef = doc(database, collectionName, id);
+    await updateDoc(docRef, data);
+    console.log(`Updated document ${id} in ${collectionName}`);
+  } catch (err) {
+    console.error("Error updating document:", err);
+  }
 }
 
 // Add a document to Firestore and return its ID
@@ -48,11 +58,19 @@ export async function deleteAllFromDB(collectionName: string): Promise<void> {
 }
 
 export async function readDocFromDB(id: string, collectionName: string) {
-  const docRef = doc(database, collectionName, id);
-  const docSnap = await getDoc(docRef);
-  if(docSnap.exists()) {
-    console.log('Document data:', docSnap.data());
-    return docSnap.data();
+  try {
+    const docRef = doc(database, collectionName, id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log('Document data:', docSnap.data());
+      return docSnap.data();
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (err) {
+    console.error("Error fetching document:", err);
+    return null;
   }
-  return null;
 }
