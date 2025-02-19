@@ -16,7 +16,12 @@ export interface GoalItemProps {
 const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
     return (
       <Pressable style={styles.goalItem}
-        onPress={() => router.push(`/goals/${goal.id}`)}>
+        onPress={() => router.push(`/goals/${goal.id}`)}
+        android_ripple={{ 
+          color: '#210644', 
+          borderless: false,
+          foreground: true 
+        }}>
 
         <Text style={styles.goalText}>{goal.text}</Text>
         <Button title="X" color="red" onPress={() => deleteGoal(goal.id)} />
