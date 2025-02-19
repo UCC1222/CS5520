@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, StyleSheet, Button, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import Goal from '../App';
+import PressableButton from './PressableButton';
 
 export interface Goal {
   text: string;
@@ -24,8 +25,10 @@ const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
         }}>
 
         <Text style={styles.goalText}>{goal.text}</Text>
-        <Button title="X" color="red" onPress={() => deleteGoal(goal.id)} />
-        
+        <PressableButton onPress={() => deleteGoal(goal.id)}
+        style={styles.deleteButton}>
+          <Text style={styles.deleteButtonText}>X</Text>
+        </PressableButton>
       </Pressable>
     );
   };
@@ -49,6 +52,15 @@ const styles = StyleSheet.create({
       opacity: 0.7,
       backgroundColor: '#e0b3ff',
     },
+    deleteButton: {
+      backgroundColor: 'red',
+      minWidth: 40,
+      alignItems: 'center',
+    },
+    deleteButtonText: {
+      color: 'white',
+      fontWeight: 'bold',
+    }
   });
 
 export default GoalItem;
