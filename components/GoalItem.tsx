@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
-import { Link, router } from 'expo-router';
+import { Text, StyleSheet, Button, Pressable } from 'react-native';
+import { router } from 'expo-router';
 import Goal from '../App';
 
 export interface Goal {
@@ -15,20 +15,13 @@ export interface GoalItemProps {
 
 const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
     return (
-      <View style={styles.goalItem}>
-        <Link href={`/goals/${goal.id}`} asChild>
-           <Button
-            title="info"
-            onPress={() => {
-              router .navigate(`/goals/${goal.id}`);
-            }}
-          />
-        </Link>
+      <Pressable style={styles.goalItem}
+        onPress={() => router.push(`/goals/${goal.id}`)}>
 
         <Text style={styles.goalText}>{goal.text}</Text>
         <Button title="X" color="red" onPress={() => deleteGoal(goal.id)} />
         
-      </View>
+      </Pressable>
     );
   };
 
