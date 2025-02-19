@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
-import { Link, router } from 'expo-router';
+import { Text, StyleSheet, View, Pressable } from 'react-native';
+import { router } from 'expo-router';
 import Goal from '../App';
+import PressableButton from './PressableButton';
+import { Ionicons } from '@expo/vector-icons';
 
 export interface Goal {
   text: string;
@@ -15,20 +17,20 @@ export interface GoalItemProps {
 
 const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
     return (
-      <View style={styles.goalItem}>
-        <Link href={`/goals/${goal.id}`} asChild>
-           <Button
-            title="info"
-            onPress={() => {
-              router .navigate(`/goals/${goal.id}`);
-            }}
-          />
-        </Link>
+      <Pressable style={({pressed}) => [styles.goalItem, pressed && styles.pressed]}
+        onPress={() => router.push(`/goals/${goal.id}`)}
+        android_ripple={{ 
+          color: '#210644', 
+          borderless: false,
+          foreground: true 
+        }}>
 
         <Text style={styles.goalText}>{goal.text}</Text>
-        <Button title="X" color="red" onPress={() => deleteGoal(goal.id)} />
-        
-      </View>
+        <PressableButton onPress={() => deleteGoal(goal.id)}
+        style={styles.deleteButton}>
+          <Ionicons name="trash" size={18} color="white" />
+        </PressableButton>
+      </Pressable>
     );
   };
 
@@ -47,12 +49,19 @@ const styles = StyleSheet.create({
     goalText: {
       fontSize: 16,
     },
-    linkText: {
-      fontSize: 16,
-      color: 'blue',
-      marginRight: 10,
-      textDecorationLine: 'underline',
+    pressed:{
+      opacity: 0.7,
+      backgroundColor: '#e0b3ff',
     },
+    deleteButton: {
+      backgroundColor: 'grey',
+      minWidth: 40,
+      alignItems: 'center',
+    },
+    deleteButtonText: {
+      color: 'white',
+      fontWeight: 'bold',
+    }
   });
 
 export default GoalItem;
