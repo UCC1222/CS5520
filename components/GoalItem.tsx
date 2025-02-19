@@ -15,7 +15,7 @@ export interface GoalItemProps {
 
 const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
     return (
-      <Pressable style={styles.goalItem}
+      <Pressable style={({pressed}) => [styles.goalItem, pressed && styles.pressed]}
         onPress={() => router.push(`/goals/${goal.id}`)}
         android_ripple={{ 
           color: '#210644', 
@@ -45,11 +45,9 @@ const styles = StyleSheet.create({
     goalText: {
       fontSize: 16,
     },
-    linkText: {
-      fontSize: 16,
-      color: 'blue',
-      marginRight: 10,
-      textDecorationLine: 'underline',
+    pressed:{
+      opacity: 0.7,
+      backgroundColor: '#e0b3ff',
     },
   });
 
