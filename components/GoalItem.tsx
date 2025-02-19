@@ -1,8 +1,9 @@
 import React from 'react';
-import { Text, StyleSheet, Button, Pressable } from 'react-native';
+import { Text, StyleSheet, View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import Goal from '../App';
 import PressableButton from './PressableButton';
+import { Ionicons } from '@expo/vector-icons';
 
 export interface Goal {
   text: string;
@@ -27,7 +28,7 @@ const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
         <Text style={styles.goalText}>{goal.text}</Text>
         <PressableButton onPress={() => deleteGoal(goal.id)}
         style={styles.deleteButton}>
-          <Text style={styles.deleteButtonText}>X</Text>
+          <Ionicons name="trash" size={18} color="white" />
         </PressableButton>
       </Pressable>
     );
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#e0b3ff',
     },
     deleteButton: {
-      backgroundColor: 'red',
+      backgroundColor: 'grey',
       minWidth: 40,
       alignItems: 'center',
     },
