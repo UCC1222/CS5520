@@ -13,9 +13,13 @@ export interface Goal {
 export interface GoalItemProps {
   goal: Goal;
   deleteGoal: (id: string) => void;
+  onPressIn?: () => void;
+  onPressOut?: () => void;
+
 }
 
-const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
+const GoalItem: React.FC<GoalItemProps> = ({ 
+  goal, deleteGoal, onPressIn, onPressOut }) => {
     const handleLongPress = () => {
       Alert.alert(
         "Delete Goal",
@@ -35,6 +39,8 @@ const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
       <Pressable style={({pressed}) => [styles.goalItem, pressed && styles.pressed]}
         onPress={() => router.push(`/goals/${goal.id}`)}
         onLongPress={handleLongPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
         android_ripple={{ 
           color: '#210644', 
           borderless: false,
