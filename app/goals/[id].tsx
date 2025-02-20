@@ -1,7 +1,10 @@
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { readDocFromDB, updateDB} from '../../Firebase/firestoreHelper';
+import PressableButton from '../../components/PressableButton';
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function GoalDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -33,9 +36,13 @@ export default function GoalDetails() {
       {/* ✅ Proper placement of Stack.Screen to dynamically update title */}
       <Stack.Screen options={{
         headerTitle: warning ? "Warning!" : goalText || "Goal Details",
-        headerRight: () => (
-          <Button title="Warning" color="red" onPress={toggleWarning} />
-        )
+        headerRight: () => 
+        <PressableButton
+          onPress={toggleWarning}
+          style={styles.warningButton}
+        >
+          <Ionicons name="warning-outline" size={24} color="black" />
+        </PressableButton>
       }} />
       
       {/* ✅ Goal text changes color dynamically */}
@@ -60,5 +67,9 @@ const styles = StyleSheet.create({
   },
   warningText: {
     color: 'red',
+  },
+  warningButton: {
+    marginRight: 10,
+    backgroundColor: 'white',
   },
 });
