@@ -60,6 +60,34 @@ export default function App() {
     }
   };
 
+  const renderSeparator = ({highlighted}: {highlighted: boolean}) => (
+    <View
+      style={[
+        styles.separator,
+        {
+          backgroundColor: highlighted ? '#800080' : '#d3d3d3', // 默认浅灰色，高亮时紫色
+          height: highlighted ? 8 : 5,
+          width: '90%',
+        }
+      ]}
+    />
+  );
+
+  const renderItem = ({item, separators
+  }: {item: Goal;
+     separators: {
+      highlight: () => void;
+      unhighlight: () => void;
+     }}) => (
+      <GoalItem
+        goal={item}
+        deleteGoal={deleteGoal}
+        onPressIn={() => separators.highlight()}
+        onPressOut={() => separators.unhighlight()}
+      />
+     );
+  
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -74,10 +102,8 @@ export default function App() {
       <FlatList
         data={goals}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <GoalItem goal={item} deleteGoal={deleteGoal}/>}
-        ItemSeparatorComponent={() => (
-          <View style={styles.separator} />
-        )}
+        renderItem={renderItem}
+        ItemSeparatorComponent={renderSeparator}
           ListHeaderComponent={
             goals.length > 0 ? (
               <View style={styles.headerContainer}>
@@ -166,10 +192,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: 'purple',
+    width: '90%',
     marginVertical: 8,
     alignSelf: 'center',
+    height: 10,
   }
 });

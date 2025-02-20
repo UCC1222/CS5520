@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View, Pressable } from 'react-native';
+import { Text, StyleSheet, View, Pressable, Alert } from 'react-native';
 import { router } from 'expo-router';
 import Goal from '../App';
 import PressableButton from './PressableButton';
@@ -13,12 +13,34 @@ export interface Goal {
 export interface GoalItemProps {
   goal: Goal;
   deleteGoal: (id: string) => void;
+  onPressIn?: () => void;
+  onPressOut?: () => void;
+
 }
 
-const GoalItem: React.FC<GoalItemProps> = ({ goal, deleteGoal }) => {
-    return (
+const GoalItem: React.FC<GoalItemProps> = ({ 
+  goal, deleteGoal, onPressIn, onPressOut }) => {
+    const handleLongPress = () => {
+      Alert.alert(
+        "Delete Goal",
+        `Are you sure you want to delete "${goal.text}"?`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          { text: "Delte", onPress: () => deleteGoal(goal.id),
+            style: "destructive"}
+        ]
+      );
+    };
+  
+  return (
       <Pressable style={({pressed}) => [styles.goalItem, pressed && styles.pressed]}
         onPress={() => router.push(`/goals/${goal.id}`)}
+        onLongPress={handleLongPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
         android_ripple={{ 
           color: '#210644', 
           borderless: false,
