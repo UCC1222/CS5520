@@ -35,7 +35,6 @@ const GoalUsers = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>User List</Text>
       <FlatList
         data={users}
         keyExtractor={(item) => item.id.toString()}
