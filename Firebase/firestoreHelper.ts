@@ -57,6 +57,10 @@ export async function deleteAllFromDB(collectionName: string): Promise<void> {
   }
 }
 
+export async function readAllFromDB(collectionName: string) {
+  const querySnapshot = await getDocs(collection(database, collectionName));
+}
+
 export async function readDocFromDB(id: string, collectionName: string) {
   try {
     const docRef = doc(database, collectionName, id);
@@ -72,5 +76,54 @@ export async function readDocFromDB(id: string, collectionName: string) {
   } catch (err) {
     console.error("Error fetching document:", err);
     return null;
+  }
+}
+
+export async function getUsersForGoal(goalId: string) {
+  try {
+    const usersRef = collection(database, `goals/${goalId}/users`);
+    const querySnapshot = await getDocs(usersRef);
+
+    const usersList = querySnapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    }));
+
+    console.log(`Fetched ${usersList.length} users for goal: ${goalId}`);
+    return usersList;
+  } catch (err) {
+    console.error(`Error fetching users for goal ${goalId}:`, err);
+    return [];
+  }
+}
+
+export async function writeToSubcollection(
+  collectionPath: string, // e.g., "goals/${goalId}/users"
+  data: object
+): Promise<string | null> {
+  try {
+    const docRef = await addDoc(collection(database, collectionPath), data);
+    console.log(`Document added successfully with ID: ${docRef.id}`);
+    return docRef.id;
+  } catch (err) {
+    console.error('Error adding document:', err);
+    return null;
+  }
+}
+
+export async function getUsersFromFirestore(goalId: string) {
+  try {
+    const usersRef = collection(database, `goals/${goalId}/users`);
+    const querySnapshot = await getDocs(usersRef);
+
+    const usersList = querySnapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      name: docSnap.data().name || "Unnamed User", // Ensure name exists
+    }));
+
+    return usersList;
+  } catch (err) {
+    console.error(`Error fetching users for goal ${goalId}:`, err);
+    return [];
   }
 }

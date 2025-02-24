@@ -50,7 +50,7 @@ export default function GoalDetails() {
       <Text style={[styles.goalText, warning && styles.warningText]}>
         {goalText ? goalText : "Loading..."}
       </Text>
-      <GoalUsers />
+      <GoalUsers goalId={id}/>
     </View>
   );
 }
