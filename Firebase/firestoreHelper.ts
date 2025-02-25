@@ -17,14 +17,17 @@ export async function updateDB(id: string, collectionName: string, data: object)
 }
 
 // Add a document to Firestore and return its ID
-export async function writeToDB(data: Omit<Goal, 'id'>, collectionName: string): Promise<string | null> {
+export async function writeToFirestore(
+  path: string, 
+  data: object
+): Promise<string | null> {
   try {
-    const docRef = await addDoc(collection(database, collectionName), data);
-    console.log(`Document added successfully with ID: ${docRef.id}`);
-    return docRef.id; // Return the ID of the newly added document
+    const docRef = await addDoc(collection(database, path), data);
+    console.log(`Document added successfully in ${path} with ID: ${docRef.id}`);
+    return docRef.id;
   } catch (err) {
-    console.error('Error adding document:', err);
-    return null; // Return null if an error occurs
+    console.error(`Error adding document to ${path}:`, err);
+    return null;
   }
 }
 
@@ -97,19 +100,6 @@ export async function getUsersForGoal(goalId: string) {
   }
 }
 
-export async function writeToSubcollection(
-  collectionPath: string, // e.g., "goals/${goalId}/users"
-  data: object
-): Promise<string | null> {
-  try {
-    const docRef = await addDoc(collection(database, collectionPath), data);
-    console.log(`Document added successfully with ID: ${docRef.id}`);
-    return docRef.id;
-  } catch (err) {
-    console.error('Error adding document:', err);
-    return null;
-  }
-}
 
 export async function getUsersFromFirestore(goalId: string) {
   try {

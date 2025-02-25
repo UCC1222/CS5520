@@ -4,7 +4,7 @@ import Input from '../components/Input';
 import GoalItem, { Goal } from '../components/GoalItem';
 import { onSnapshot, collection } from 'firebase/firestore';
 import {database} from '../Firebase/firebaseSetup';
-import { writeToDB, deleteFromDB, deleteAllFromDB } from '../Firebase/firestoreHelper';
+import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../Firebase/firestoreHelper';
 
 
 export default function App() {
@@ -30,7 +30,7 @@ export default function App() {
       id: Math.random().toString()}; 
 
     try {
-      await writeToDB(newGoal, "goals");
+      await writeToFirestore("goals", newGoal);
       setIsModalVisible(false);
     } catch (error) {
       Alert.alert("Error", "Failed to add goal. Please try again.");

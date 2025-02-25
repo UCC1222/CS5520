@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
-import { writeToSubcollection, getUsersFromFirestore } from '../Firebase/firestoreHelper';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Pressable } from 'react-native';
+import { getUsersFromFirestore } from '../Firebase/firestoreHelper';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../Firebase/firebaseSetup';
 
@@ -18,39 +18,26 @@ const GoalUsers: React.FC<GoalUsersProps> = ({ goalId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // ✅ 1. First, check Firestore for existing users
         const storedUsers = await getUsersFromFirestore(goalId);
 
         if (storedUsers.length > 0) {
           console.log(`Using existing users from Firestore for goal: ${goalId}`);
           setUsers(storedUsers);
-          return; // ✅ Skip API call since users already exist
+          return;
         }
 
-        // ✅ 2. If no users in Firestore, fetch from API
         console.log(`Fetching users from API for goal: ${goalId}`);
         const response = await fetch('https://jsonplaceholder.typicode.com/users');
         if (!response.ok) {
           throw new Error(`HTTP Error ${response.status}`);
         }
         const apiUsers = await response.json();
-
-        // ✅ 3. Write API data to Firestore under "goals/${goalId}/users"
-        for (const user of apiUsers) {
-          await writeToSubcollection(`goals/${goalId}/users`, {
-            name: user.name,
-          });
-        }
-
-        // ✅ 4. Fetch Saved Users from Firestore after writing
-        const finalUsers = await getUsersFromFirestore(goalId);
-        setUsers(finalUsers);
+        setUsers(apiUsers);
       } catch (err) {
-        setError('Failed to fetch and store users');
+        setError('Failed to fetch users');
       } finally {
         setLoading(false);
       }
@@ -58,6 +45,24 @@ const GoalUsers: React.FC<GoalUsersProps> = ({ goalId }) => {
 
     fetchUsers();
   }, [goalId]);
+
+  const postUser = async (userName: string) => {
+    try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: userName }),
+      });
+
+      const responseData = await response.json();
+      console.log('User added:', responseData);
+      alert(`User added: ${responseData.name}`);
+    } catch (err) {
+      console.error('Error posting user:', err);
+    }
+  };
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text style={styles.error}>{error}</Text>;
@@ -67,8 +72,18 @@ const GoalUsers: React.FC<GoalUsersProps> = ({ goalId }) => {
       <Text style={styles.title}>Users for Goal: {goalId}</Text>
       <FlatList
         data={users}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text style={styles.user}>{item.name}</Text>}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.userContainer}>
+            <Text style={styles.user}>{item.name}</Text>
+            <Pressable
+              style={styles.postButton}
+              onPress={() => postUser(item.name)}
+            >
+              <Text style={styles.buttonText}>POST</Text>
+            </Pressable>
+          </View>
+        )}
       />
     </View>
   );
@@ -77,7 +92,10 @@ const GoalUsers: React.FC<GoalUsersProps> = ({ goalId }) => {
 const styles = StyleSheet.create({
   container: { padding: 20 },
   title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+  userContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 },
   user: { fontSize: 16, paddingVertical: 5 },
+  postButton: { backgroundColor: 'blue', padding: 8, borderRadius: 5 },
+  buttonText: { color: 'white', fontWeight: 'bold' },
   error: { color: 'red', fontSize: 16 },
 });
 
