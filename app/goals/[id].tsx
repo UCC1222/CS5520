@@ -4,6 +4,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { readDocFromDB, updateDB} from '../../Firebase/firestoreHelper';
 import PressableButton from '../../components/PressableButton';
 import { Ionicons } from '@expo/vector-icons';
+import GoalUsers from '../../components/GoalUsers';
 
 
 export default function GoalDetails() {
@@ -49,6 +50,7 @@ export default function GoalDetails() {
       <Text style={[styles.goalText, warning && styles.warningText]}>
         {goalText ? goalText : "Loading..."}
       </Text>
+      <GoalUsers goalId={id}/>
     </View>
   );
 }

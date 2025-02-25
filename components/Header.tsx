@@ -6,6 +6,7 @@ interface HeaderProps {
     }
 
 export default function Header({appName}: HeaderProps) {
+
   return (
     <View>
       <Text>Welcome to {appName}</Text>

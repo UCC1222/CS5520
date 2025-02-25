@@ -17,14 +17,17 @@ export async function updateDB(id: string, collectionName: string, data: object)
 }
 
 // Add a document to Firestore and return its ID
-export async function writeToDB(data: Omit<Goal, 'id'>, collectionName: string): Promise<string | null> {
+export async function writeToFirestore(
+  path: string, 
+  data: object
+): Promise<string | null> {
   try {
-    const docRef = await addDoc(collection(database, collectionName), data);
-    console.log(`Document added successfully with ID: ${docRef.id}`);
-    return docRef.id; // Return the ID of the newly added document
+    const docRef = await addDoc(collection(database, path), data);
+    console.log(`Document added successfully in ${path} with ID: ${docRef.id}`);
+    return docRef.id;
   } catch (err) {
-    console.error('Error adding document:', err);
-    return null; // Return null if an error occurs
+    console.error(`Error adding document to ${path}:`, err);
+    return null;
   }
 }
 
@@ -57,6 +60,10 @@ export async function deleteAllFromDB(collectionName: string): Promise<void> {
   }
 }
 
+export async function readAllFromDB(collectionName: string) {
+  const querySnapshot = await getDocs(collection(database, collectionName));
+}
+
 export async function readDocFromDB(id: string, collectionName: string) {
   try {
     const docRef = doc(database, collectionName, id);
@@ -72,5 +79,41 @@ export async function readDocFromDB(id: string, collectionName: string) {
   } catch (err) {
     console.error("Error fetching document:", err);
     return null;
+  }
+}
+
+export async function getUsersForGoal(goalId: string) {
+  try {
+    const usersRef = collection(database, `goals/${goalId}/users`);
+    const querySnapshot = await getDocs(usersRef);
+
+    const usersList = querySnapshot.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    }));
+
+    console.log(`Fetched ${usersList.length} users for goal: ${goalId}`);
+    return usersList;
+  } catch (err) {
+    console.error(`Error fetching users for goal ${goalId}:`, err);
+    return [];
+  }
+}
+
+
+export async function getUsersFromFirestore(goalId: string) {
+  try {
+    const usersRef = collection(database, `goals/${goalId}/users`);
+    const querySnapshot = await getDocs(usersRef);
+
+    const usersList = querySnapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      name: docSnap.data().name || "Unnamed User", // Ensure name exists
+    }));
+
+    return usersList;
+  } catch (err) {
+    console.error(`Error fetching users for goal ${goalId}:`, err);
+    return [];
   }
 }
