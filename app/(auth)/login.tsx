@@ -52,7 +52,7 @@ export default function Login() {
 
       <Button title={loading ? "Logging In..." : "Log In"} onPress={handleLogin} disabled={loading} />
 
-      <Text onPress={() => router.push("/signup")} style={styles.link}>
+      <Text onPress={() => router.replace("/signup")} style={styles.link}>
         New User? Create an account
       </Text>
     </View>
