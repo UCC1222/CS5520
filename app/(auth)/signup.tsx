@@ -68,7 +68,7 @@ export default function Signup() {
 
       <Button title={loading ? "Signing Up..." : "Register"} onPress={handleSignup} disabled={loading} />
 
-      <Text onPress={() => router.push("/login")} style={styles.link}>
+      <Text onPress={() => router.replace("/login")} style={styles.link}>
         Already Registered? Login
       </Text>
     </View>
