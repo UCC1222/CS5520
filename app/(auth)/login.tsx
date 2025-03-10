@@ -41,7 +41,7 @@ export default function Login() {
 
       <Button title={loading ? "Logging In..." : "Log In"} onPress={handleLogin} disabled={loading} />
 
-      <Text onPress={() => router.push("/signup")} style={{ marginTop: 10, color: "blue" }}>
+      <Text onPress={() => router.replace("/signup")} style={{ marginTop: 10, color: "blue" }}>
         New User? Create an account
       </Text>
     </View>

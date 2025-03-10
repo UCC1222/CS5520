@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { View, TextInput, Button, Text, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"; // ✅ Import Firebase functions
-import { auth } from "../../Firebase/firebaseSetup"; // ✅ Import the auth instance
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../Firebase/firebaseSetup";
 
 export default function Signup() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ Prevent multiple requests
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
@@ -51,7 +51,7 @@ export default function Signup() {
 
       <Button title={loading ? "Signing Up..." : "Register"} onPress={handleSignup} disabled={loading} />
 
-      <Text onPress={() => router.push("/login")} style={{ marginTop: 10, color: "blue" }}>
+      <Text onPress={() => router.replace("/login")} style={{ marginTop: 10, color: "blue" }}>
         Already Registered? Login
       </Text>
     </View>
