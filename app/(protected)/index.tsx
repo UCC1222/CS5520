@@ -1,10 +1,10 @@
 import React, { useState , useEffect} from 'react';
 import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
-import Input from '../components/Input';
-import GoalItem, { Goal } from '../components/GoalItem';
+import Input from '../../components/Input';
+import GoalItem, { Goal } from '../../components/GoalItem';
 import { onSnapshot, collection } from 'firebase/firestore';
-import {database} from '../Firebase/firebaseSetup';
-import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../Firebase/firestoreHelper';
+import {database} from '../../Firebase/firebaseSetup';
+import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
 
 
 export default function App() {

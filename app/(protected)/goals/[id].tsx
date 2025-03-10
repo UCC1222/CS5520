@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { readDocFromDB, updateDB} from '../../Firebase/firestoreHelper';
-import PressableButton from '../../components/PressableButton';
+import { readDocFromDB, updateDB} from '../../../Firebase/firestoreHelper';
+import PressableButton from '../../../components/PressableButton';
 import { Ionicons } from '@expo/vector-icons';
-import GoalUsers from '../../components/GoalUsers';
+import GoalUsers from '../../../components/GoalUsers';
 
 
 export default function GoalDetails() {
