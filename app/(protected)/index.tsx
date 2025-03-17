@@ -37,18 +37,19 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleInputData = async (input: string) => {
+  const handleInputData = async ({ text, imageUri }: { text: string; imageUri: string | null }) => {
     if (!auth.currentUser) {
       Alert.alert("Error", "User is not authenticated");
       return;
     }
-
-    const newGoal: Goal = {
-      text: input,
+  
+    const newGoal = {
+      text,
+      imageUri, // ✅ Store imageUri in Firestore
       id: Math.random().toString(),
       owner: auth.currentUser.uid,
     };
-
+  
     try {
       await writeToFirestore("goals", newGoal);
       setIsModalVisible(false);

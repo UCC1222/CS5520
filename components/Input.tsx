@@ -5,7 +5,7 @@ import ImageManager from './ImageManager'; // Import ImageManager component
 interface InputProps {
   modalVisible: boolean;
   textInputFocus: boolean;
-  inputHandler: (text: string) => void;
+  inputHandler: (data: { text: string; imageUri: string | null }) => void;
   onCancel: () => void;
   minLength?: number;
 }
@@ -18,34 +18,16 @@ export default function Input({
   minLength = 3 
 }: InputProps) {
   const [inputText, setInputText] = useState('');
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
   const isInputValid = inputText.trim().length >= minLength;
 
   const handleSubmit = () => {
     if (isInputValid) {
-      inputHandler(inputText);
+      inputHandler({ text: inputText, imageUri }); // ✅ Pass text and imageUri to index.tsx
       setInputText('');
+      setImageUri(null);
     }
-  };
-
-  const handleCancel = () => {
-    Alert.alert(
-      "Cancel",
-      "Are you sure you want to cancel?",
-      [
-        {
-          text: "No",
-          style: "cancel"
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            setInputText('');
-            onCancel();
-          }
-        }
-      ]
-    );
   };
 
   return (
@@ -53,15 +35,17 @@ export default function Input({
       <View style={styles.container}>
         <View style={styles.innerContainer}>
           <Text style={styles.title}>Enter Your Goal</Text>
-          
-          {/* 🔹 ImageManager component added here */}
-          <ImageManager />
+
+          {/* 🔹 ImageManager component to capture image */}
+          <ImageManager onImageTaken={setImageUri} />
+
+          {imageUri && <Image source={{ uri: imageUri }} style={styles.imagePreview} />}
 
           <TextInput
             style={styles.input}
             placeholder={`Type your goal (min ${minLength} characters)...`}
             value={inputText}
-            onChangeText={(text) => setInputText(text)}
+            onChangeText={setInputText}
             autoFocus={textInputFocus}
           />
           <Text style={[
@@ -74,21 +58,8 @@ export default function Input({
             }
           </Text>
           <View style={styles.buttonContainer}>
-            <View style={styles.buttonWrapper}>
-              <Button 
-                title="Cancel" 
-                onPress={handleCancel} 
-                color="red" 
-              />
-            </View>
-            <View style={styles.buttonWrapper}>
-              <Button 
-                title="Confirm" 
-                onPress={handleSubmit}
-                disabled={!isInputValid}
-                color={isInputValid ? undefined : '#cccccc'}
-              />
-            </View>
+            <Button title="Cancel" onPress={onCancel} color="red" />
+            <Button title="Confirm" onPress={handleSubmit} disabled={!isInputValid} />
           </View>
         </View>
       </View>
@@ -97,49 +68,11 @@ export default function Input({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  innerContainer: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'purple',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    width: '100%',
-    marginBottom: 8,
-  },
-  helperText: {
-    fontSize: 12,
-    marginBottom: 12,
-    alignSelf: 'flex-start',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    gap: 20,
-  },
-  buttonWrapper: {
-    flex: 1,
-    maxWidth: '45%',
-  },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+  innerContainer: { width: '80%', backgroundColor: '#fff', padding: 20, borderRadius: 10, alignItems: 'center' },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+  imagePreview: { width: 200, height: 200, marginBottom: 10, borderRadius: 10 },
+  input: { height: 40, borderWidth: 1, paddingHorizontal: 10, width: '100%', marginBottom: 8 },
+  helperText: { fontSize: 12, marginBottom: 12, alignSelf: 'flex-start' },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10 },
 });
