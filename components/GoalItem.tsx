@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 export interface Goal {
   text: string;
   id: string;
+  owner: string;
 }
 
 export interface GoalItemProps {
