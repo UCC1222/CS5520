@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button, StyleSheet, TextInput, View, Text, Alert, Image } from 'react-native';
+import ImageManager from './ImageManager'; // Import ImageManager component
 
 interface InputProps {
   modalVisible: boolean;
@@ -17,7 +18,7 @@ export default function Input({
   minLength = 3 
 }: InputProps) {
   const [inputText, setInputText] = useState('');
-  
+
   const isInputValid = inputText.trim().length >= minLength;
 
   const handleSubmit = () => {
@@ -53,19 +54,8 @@ export default function Input({
         <View style={styles.innerContainer}>
           <Text style={styles.title}>Enter Your Goal</Text>
           
-          {/* Image container */}
-          <View style={styles.imageContainer}>
-            <Image 
-              source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2617/2617812.png' }}
-              style={styles.image}
-              accessibilityLabel="Target icon from network"
-            />
-            <Image 
-              source={require('../assets/target-icon.png')}  // Assuming you saved the image as target-icon.png in assets folder
-              style={styles.image}
-              accessibilityLabel="Target icon from local assets"
-            />
-          </View>
+          {/* 🔹 ImageManager component added here */}
+          <ImageManager />
 
           <TextInput
             style={styles.input}
@@ -126,16 +116,6 @@ const styles = StyleSheet.create({
     color: 'purple',
     marginBottom: 20,
     textAlign: 'center',
-  },
-  imageContainer: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  image: {
-    width: 100,
-    height: 100,
   },
   input: {
     height: 40,
