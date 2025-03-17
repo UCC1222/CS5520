@@ -2,33 +2,54 @@ import React, { useState , useEffect} from 'react';
 import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
 import Input from '../../components/Input';
 import GoalItem, { Goal } from '../../components/GoalItem';
-import { onSnapshot, collection } from 'firebase/firestore';
-import {database} from '../../Firebase/firebaseSetup';
+import { onSnapshot, collection, query, where } from 'firebase/firestore';
+import {database, auth} from '../../Firebase/firebaseSetup';
 import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
+
 
 
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
-  
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(database, 'goals'), (querySnapshot) => {
-      const goalsData: Goal[] = [];
-      querySnapshot.forEach((doc) => {
-        goalsData.push({ id: doc.id, text: doc.data().text });
-      });
-      setGoals(goalsData);
-    });
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-    // Cleanup listener on component unmount
+  useEffect(() => {
+    if (!auth.currentUser) {
+      Alert.alert("Error", "User is not authenticated");
+      return;
+    }
+
+    const goalsQuery = query(collection(database, 'goals'), where("owner", "==", auth.currentUser.uid));
+    const unsubscribe = onSnapshot(goalsQuery, 
+      (querySnapshot) => {
+        const goalsData: Goal[] = [];
+        querySnapshot.forEach((doc) => {
+          goalsData.push({ id: doc.id, text: doc.data().text,
+            owner: doc.data().owner  });
+        });
+        setGoals(goalsData);
+      },
+      (error) => {
+        Alert.alert("Permission Error", "You do not have permission to access this data.");
+        console.error("Error fetching goals:", error);
+      }
+    );
+
     return () => unsubscribe();
   }, []);
 
-  const handleInputData = async (input: string) => {
-    const newGoal : Goal = { 
-      text: input,
-      id: Math.random().toString()}; 
-
+  const handleInputData = async ({ text, imageUri }: { text: string; imageUri: string | null }) => {
+    if (!auth.currentUser) {
+      Alert.alert("Error", "User is not authenticated");
+      return;
+    }
+  
+    const newGoal = {
+      text,
+      imageUri, // ✅ Store imageUri in Firestore
+      id: Math.random().toString(),
+      owner: auth.currentUser.uid,
+    };
+  
     try {
       await writeToFirestore("goals", newGoal);
       setIsModalVisible(false);
