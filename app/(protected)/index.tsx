@@ -1,11 +1,12 @@
 import React, { useState , useEffect} from 'react';
 import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
 import Input from '../../components/Input';
-import GoalItem, { Goal } from '../../components/GoalItem';
+import GoalItem from '../../components/GoalItem';
+import { Goal } from '../../components/GoalItem';
 import { onSnapshot, collection, query, where } from 'firebase/firestore';
-import {database, auth} from '../../Firebase/firebaseSetup';
+import { ref,uploadBytes, uploadBytesResumable } from 'firebase/storage'; // Import Firebase Storage functions
+import { database, auth, storage } from '../../Firebase/firebaseSetup'; // Import storage from firebaseSetup
 import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
-
 
 
 export default function App() {
@@ -23,8 +24,13 @@ export default function App() {
       (querySnapshot) => {
         const goalsData: Goal[] = [];
         querySnapshot.forEach((doc) => {
-          goalsData.push({ id: doc.id, text: doc.data().text,
-            owner: doc.data().owner  });
+          const data = doc.data();
+          goalsData.push({ 
+            id: doc.id, 
+            text: data.text,
+            owner: data.owner,
+            imageUri: data.imageUri || null
+          });
         });
         setGoals(goalsData);
       },
@@ -43,12 +49,41 @@ export default function App() {
       return;
     }
   
+    let uploadedImagePath:string |null = null;
+    
+    // If imageUri exists, upload it to Firebase Storage
+    if (imageUri) {
+      try {
+        // Fetch the image data from the URI
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        
+        // Create a reference to the user's images folder in Firebase Storage
+        const fileName = `images/${auth.currentUser.uid}/${Date.now()}.jpg`;
+        const imageRef = ref(storage, fileName);
+
+        console.log("Uploading image to Firebase Storage:", fileName);
+        
+        // Upload the image using uploadBytes (simpler than uploadBytesResumable)
+        await uploadBytes(imageRef, blob);
+        
+        // Store the path to the uploaded image (we'll use this to fetch it later)
+        uploadedImagePath = fileName;
+      } catch (error) {
+        console.error("Error uploading image to Firebase Storage:", error);
+        Alert.alert("Error", "Failed to upload image. Please try again.");
+        return;
+      }
+    }
+  
     const newGoal = {
       text,
-      imageUri, // ✅ Store imageUri in Firestore
+      imageUri: uploadedImagePath, // Store the Firebase Storage path
       id: Math.random().toString(),
       owner: auth.currentUser.uid,
     };
+
+    console.log("New Goal:", newGoal);
   
     try {
       await writeToFirestore("goals", newGoal);
@@ -108,8 +143,6 @@ export default function App() {
       />
      );
   
-
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header and Button Section */}
