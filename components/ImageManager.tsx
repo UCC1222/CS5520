@@ -1,27 +1,34 @@
 import React, { useState } from 'react';
 import { View, Button, Image, Alert, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { storage } from '../Firebase/firebaseSetup';
 import { getAuth } from "firebase/auth"; // ✅ Import Firebase Auth
+
 
 const uploadImageToFirebase = async (uri: string) => {
   try {
     const auth = getAuth(); // ✅ Get authentication instance
-    const user = auth.currentUser; // ✅ Get the currently logged-in user
-    if (!user) throw new Error("❌ User not authenticated.");
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert("Error", "User not authenticated.");
+      return null;
+    }
 
     const response = await fetch(uri);
     const blob = await response.blob();
-    
-    // ✅ Store images inside the user's folder: `/images/{userId}/filename.jpg`
-    const fileName = `images/${user.uid}/${Date.now()}.jpg`;
-    const imageRef = ref(storage, fileName);
 
-    await uploadBytes(imageRef, blob);
+    console.log("📸 Image fetched successfully:", blob);
+
+    // ✅ Store images inside the user's folder: `/images/{userId}/filename.jpg`
+    // const fileName = `images/${user.uid}/${Date.now()}.jpg`;
+    const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+    // const imageRef = ref(storage, fileName);
+    const imageRef = ref(storage, `images/${fileName}`);
+    // console.log(imageRef, blob)
+    const uploadResult = await uploadBytesResumable(imageRef, blob);
     const downloadURL = await getDownloadURL(imageRef);
 
-    console.log("✅ Image uploaded successfully:", downloadURL);
     return downloadURL;
   } catch (error) {
     console.error("❌ Error uploading image:", error);

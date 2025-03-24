@@ -26,7 +26,7 @@ export default function Input({
     if (isInputValid) {
       inputHandler({ text: inputText, imageUri }); // ✅ Pass text and imageUri to index.tsx
       setInputText('');
-      setImageUri(null);
+      setImageUri(imageUri);
     }
   };
 
@@ -68,11 +68,45 @@ export default function Input({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
-  innerContainer: { width: '80%', backgroundColor: '#fff', padding: 20, borderRadius: 10, alignItems: 'center' },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
-  imagePreview: { width: 200, height: 200, marginBottom: 10, borderRadius: 10 },
-  input: { height: 40, borderWidth: 1, paddingHorizontal: 10, width: '100%', marginBottom: 8 },
-  helperText: { fontSize: 12, marginBottom: 12, alignSelf: 'flex-start' },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  innerContainer: {
+    marginHorizontal: 20,
+    backgroundColor: '#fff',
+    padding: 15, 
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10, 
+  },
+  imagePreview: {
+    width: 180,
+    height: 180,
+    borderRadius: 10,
+    marginBottom: -150, 
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    width: '100%',
+    marginBottom: 6, 
+  },
+  helperText: {
+    fontSize: 12,
+    marginBottom: 8,
+    alignSelf: 'flex-start',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
 });
