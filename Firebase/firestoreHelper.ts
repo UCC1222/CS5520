@@ -1,4 +1,4 @@
-import { collection, addDoc, deleteDoc, doc, getDocs, getDoc, updateDoc} from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, getDocs, getDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { database } from './firebaseSetup';
 
 export interface Goal {
@@ -117,3 +117,35 @@ export async function getUsersFromFirestore(goalId: string) {
     return [];
   }
 }
+
+export const saveUserLocation = async (latitude: number, longitude: number, userId: string) => {
+  const userRef = doc(database, 'users', userId);
+  
+  try {
+    await setDoc(userRef, {
+      location: {
+        latitude,
+        longitude,
+      }
+    }, { merge: true });
+    return true;
+  } catch (error) {
+    console.error('Error saving user location:', error);
+    throw error;
+  }
+};
+
+export const getUserLocation = async (userId: string) => {
+  try {
+    const userRef = doc(database, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists() && userDoc.data().location) {
+      return userDoc.data().location;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting user location:', error);
+    throw error;
+  }
+};

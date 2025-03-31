@@ -1,17 +1,106 @@
-import React, { useState , useEffect} from 'react';
-import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert, Platform } from 'react-native';
 import Input from '../../components/Input';
 import GoalItem from '../../components/GoalItem';
 import { Goal } from '../../components/GoalItem';
 import { onSnapshot, collection, query, where } from 'firebase/firestore';
-import { ref,uploadBytes, uploadBytesResumable } from 'firebase/storage'; // Import Firebase Storage functions
-import { database, auth, storage } from '../../Firebase/firebaseSetup'; // Import storage from firebaseSetup
+import { ref, uploadBytes } from 'firebase/storage';
+import { database, auth, storage } from '../../Firebase/firebaseSetup';
 import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
+import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
+import { verifyPermission } from '../../components/NotificationManager';
 
+// Set up the notification handler
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const router = useRouter();
+
+  // Configure notifications and get push token
+  useEffect(() => {
+    const configurePushNotifications = async () => {
+      try {
+        const hasPermission = await verifyPermission();
+        if (!hasPermission) {
+          console.log('No permission for notifications');
+          return;
+        }
+
+        // Configure Android channel
+        if (Platform.OS === "android") {
+          await Notifications.setNotificationChannelAsync("default", {
+            name: "default",
+            importance: Notifications.AndroidImportance.MAX,
+          });
+        }
+
+        // Get project ID from either source
+        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+        
+        if (!projectId) {
+          console.log('No project ID found. Push notifications might not work.');
+          return;
+        }
+
+        // Get push token
+        const pushTokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+        const pushTokenString = pushTokenData.data;
+        
+        console.log('Push token:', pushTokenString);
+        // Here you would typically save the token to your database
+        // associated with the current user
+        if (auth.currentUser) {
+          // You could save this token to the user's document in Firestore
+          console.log('User ID:', auth.currentUser.uid);
+          console.log('Token data:', pushTokenString);
+        }
+      } catch (error) {
+        console.error('Error setting up push notifications:', error);
+      }
+    };
+
+    configurePushNotifications();
+  }, []);
+
+  // Notification received listener
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('Notification received:', notification);
+        const { title, body } = notification.request.content;
+        Alert.alert(title || 'New Notification', body);
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
+
+  // Notification response listener
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log('Notification response:', response);
+        const { data } = response.notification.request.content;
+        
+        // Handle navigation based on the data passed in notification
+        if (data?.screen === 'profile') {
+          router.push('/profile');
+        }
+      }
+    );
+
+    return () => subscription.remove();
+  }, [router]);
 
   useEffect(() => {
     if (!auth.currentUser) {

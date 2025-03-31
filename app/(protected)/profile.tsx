@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, Image, Alert, Button } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { useLocalSearchParams, router } from 'expo-router';
 import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+import { saveUserLocation } from '../../Firebase/firestoreHelper';
+import NotificationManager from '../../components/NotificationManager';
 
 export default function Profile() {
   const auth = getAuth();
@@ -13,6 +16,7 @@ export default function Profile() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [permissionResponse, requestPermission] = Location.useForegroundPermissions();
 
   // Set picked location from query params
   useEffect(() => {
@@ -23,13 +27,53 @@ export default function Profile() {
     }
   }, [lat, lng]);
 
+  const verifyPermission = async () => {
+    if (permissionResponse?.granted) return true;
+
+    const result = await requestPermission();
+    if (!result.granted) {
+      Alert.alert("Permission required", "We need your permission to access location.");
+      return false;
+    }
+    return true;
+  };
+
+  const locateUserHandler = async () => {
+    const hasPermission = await verifyPermission();
+    if (!hasPermission) return;
+
+    try {
+      const location = await Location.getCurrentPositionAsync();
+      setPickedLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+    } catch (error) {
+      Alert.alert("Could not fetch location", "Please try again later.");
+    }
+  };
+
   const getMapPreview = () => {
     if (!pickedLocation) return null;
 
     const mapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
     const { latitude, longitude } = pickedLocation;
 
-    return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=14&size=400x200&maptype=roadmap&markers=color:red%7Clabel:S%7C${latitude},${longitude}&key=${mapsApiKey}`;
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=14&size=400x200&maptype=roadmap&markers=color:red%7Clabel:L%7C${latitude},${longitude}&key=${mapsApiKey}`;
+  };
+
+  const saveLocationHandler = async () => {
+    if (!pickedLocation || !user) {
+      Alert.alert("No location selected", "Please select a location first.");
+      return;
+    }
+
+    try {
+      await saveUserLocation(pickedLocation.latitude, pickedLocation.longitude, user.uid);
+      Alert.alert("Success", "Location saved successfully!");
+    } catch (error) {
+      Alert.alert("Error", "Failed to save location. Please try again.");
+    }
   };
 
   return (
@@ -47,17 +91,37 @@ export default function Profile() {
 
       <View style={styles.locationSection}>
         <Button
-          title="Pick a Location"
-          onPress={() => router.push('/map')}
+          title="Find My Location"
+          onPress={locateUserHandler}
+        />
+
+        <Button
+          title="Open Interactive Map"
+          onPress={() => {
+            if (pickedLocation) {
+              const { latitude, longitude } = pickedLocation;
+              router.push(`/map?lat=${latitude}&lng=${longitude}`);
+            } else {
+              router.push('/map');
+            }
+          }}
         />
 
         {pickedLocation && (
-          <Image
-            source={{ uri: getMapPreview()! }}
-            style={styles.mapPreview}
-          />
+          <>
+            <Image
+              source={{ uri: getMapPreview()! }}
+              style={styles.mapPreview}
+            />
+            <Button
+              title="Save Location"
+              onPress={saveLocationHandler}
+            />
+          </>
         )}
       </View>
+
+      <NotificationManager />
     </View>
   );
 }
