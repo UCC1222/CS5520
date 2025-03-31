@@ -6,15 +6,15 @@ const TRIGGER_TYPE = {
   DATE: 'date' as const
 };
 
+export const verifyPermission = async () => {
+  const permissionStatus = await Notifications.getPermissionsAsync();
+  if (permissionStatus.granted) return true;
+
+  const requestStatus = await Notifications.requestPermissionsAsync();
+  return requestStatus.granted;
+};
+
 export default function NotificationManager() {
-  const verifyPermission = async () => {
-    const permissionStatus = await Notifications.getPermissionsAsync();
-    if (permissionStatus.granted) return true;
-
-    const requestStatus = await Notifications.requestPermissionsAsync();
-    return requestStatus.granted;
-  };
-
   const scheduleNotificationHandler = async () => {
     const hasPermission = await verifyPermission();
     if (!hasPermission) {
@@ -25,13 +25,13 @@ export default function NotificationManager() {
     try {
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: "Location Reminder! 📍",
-          body: "Don't forget to check your saved location!",
+          title: "Daily Goal Reminder! ",
+          body: "Don't forget to add your daily goal!",
           data: { screen: 'profile' },
         },
         trigger: {
           seconds: 5,
-          repeats: false
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
         } as Notifications.TimeIntervalTriggerInput,
       });
       
@@ -46,7 +46,8 @@ export default function NotificationManager() {
   return (
     <View style={styles.container}>
       <Button 
-        title="Set Location Reminder" 
+        title="
+        Remind me to add my daily goal" 
         onPress={scheduleNotificationHandler}
       />
     </View>

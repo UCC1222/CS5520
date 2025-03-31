@@ -1,14 +1,16 @@
-import React, { useState , useEffect} from 'react';
-import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, Button, FlatList, Alert, Platform } from 'react-native';
 import Input from '../../components/Input';
 import GoalItem from '../../components/GoalItem';
 import { Goal } from '../../components/GoalItem';
 import { onSnapshot, collection, query, where } from 'firebase/firestore';
-import { ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
+import { ref, uploadBytes } from 'firebase/storage';
 import { database, auth, storage } from '../../Firebase/firebaseSetup';
 import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
+import { verifyPermission } from '../../components/NotificationManager';
 
 // Set up the notification handler
 Notifications.setNotificationHandler({
@@ -23,6 +25,31 @@ export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const router = useRouter();
+
+  // Configure Android notification channel
+  useEffect(() => {
+    const configureNotifications = async () => {
+      try {
+        const hasPermission = await verifyPermission();
+        if (!hasPermission) {
+          console.log('No permission for notifications');
+          return;
+        }
+
+        // Configure Android channel
+        if (Platform.OS === "android") {
+          await Notifications.setNotificationChannelAsync("default", {
+            name: "default",
+            importance: Notifications.AndroidImportance.MAX,
+          });
+        }
+      } catch (error) {
+        console.error('Error configuring notifications:', error);
+      }
+    };
+
+    configureNotifications();
+  }, []);
 
   // Notification received listener
   useEffect(() => {
