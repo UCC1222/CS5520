@@ -17,7 +17,7 @@ Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
   }),
 });
 
@@ -26,9 +26,9 @@ export default function App() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const router = useRouter();
 
-  // Configure Android notification channel
+  // Configure notifications and get push token
   useEffect(() => {
-    const configureNotifications = async () => {
+    const configurePushNotifications = async () => {
       try {
         const hasPermission = await verifyPermission();
         if (!hasPermission) {
@@ -43,12 +43,33 @@ export default function App() {
             importance: Notifications.AndroidImportance.MAX,
           });
         }
+
+        // Get project ID from either source
+        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+        
+        if (!projectId) {
+          console.log('No project ID found. Push notifications might not work.');
+          return;
+        }
+
+        // Get push token
+        const pushTokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+        const pushTokenString = pushTokenData.data;
+        
+        console.log('Push token:', pushTokenString);
+        // Here you would typically save the token to your database
+        // associated with the current user
+        if (auth.currentUser) {
+          // You could save this token to the user's document in Firestore
+          console.log('User ID:', auth.currentUser.uid);
+          console.log('Token data:', pushTokenString);
+        }
       } catch (error) {
-        console.error('Error configuring notifications:', error);
+        console.error('Error setting up push notifications:', error);
       }
     };
 
-    configureNotifications();
+    configurePushNotifications();
   }, []);
 
   // Notification received listener
