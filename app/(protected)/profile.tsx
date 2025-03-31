@@ -5,6 +5,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import { saveUserLocation } from '../../Firebase/firestoreHelper';
+import NotificationManager from '../../components/NotificationManager';
 
 export default function Profile() {
   const auth = getAuth();
@@ -119,6 +120,8 @@ export default function Profile() {
           </>
         )}
       </View>
+
+      <NotificationManager />
     </View>
   );
 }
