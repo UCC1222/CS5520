@@ -22,6 +22,19 @@ export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  // Add notification received listener
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('Notification received:', notification);
+        const { title, body } = notification.request.content;
+        Alert.alert(title || 'New Notification', body);
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
+
   useEffect(() => {
     if (!auth.currentUser) {
       Alert.alert("Error", "User is not authenticated");
