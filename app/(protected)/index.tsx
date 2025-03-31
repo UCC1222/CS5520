@@ -8,6 +8,7 @@ import { ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
 import { database, auth, storage } from '../../Firebase/firebaseSetup';
 import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
 import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
 
 // Set up the notification handler
 Notifications.setNotificationHandler({
@@ -21,8 +22,9 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const router = useRouter();
 
-  // Add notification received listener
+  // Notification received listener
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
@@ -34,6 +36,23 @@ export default function App() {
 
     return () => subscription.remove();
   }, []);
+
+  // Notification response listener
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log('Notification response:', response);
+        const { data } = response.notification.request.content;
+        
+        // Handle navigation based on the data passed in notification
+        if (data?.screen === 'profile') {
+          router.push('/profile');
+        }
+      }
+    );
+
+    return () => subscription.remove();
+  }, [router]);
 
   useEffect(() => {
     if (!auth.currentUser) {
