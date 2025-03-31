@@ -4,10 +4,19 @@ import Input from '../../components/Input';
 import GoalItem from '../../components/GoalItem';
 import { Goal } from '../../components/GoalItem';
 import { onSnapshot, collection, query, where } from 'firebase/firestore';
-import { ref,uploadBytes, uploadBytesResumable } from 'firebase/storage'; // Import Firebase Storage functions
-import { database, auth, storage } from '../../Firebase/firebaseSetup'; // Import storage from firebaseSetup
+import { ref, uploadBytes, uploadBytesResumable } from 'firebase/storage';
+import { database, auth, storage } from '../../Firebase/firebaseSetup';
 import { writeToFirestore, deleteFromDB, deleteAllFromDB } from '../../Firebase/firestoreHelper';
+import * as Notifications from 'expo-notifications';
 
+// Set up the notification handler
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
