@@ -4,6 +4,7 @@ import { getAuth } from 'firebase/auth';
 import { useLocalSearchParams, router } from 'expo-router';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
+import { saveUserLocation } from '../../Firebase/firestoreHelper';
 
 export default function Profile() {
   const auth = getAuth();
@@ -60,6 +61,20 @@ export default function Profile() {
     return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=14&size=400x200&maptype=roadmap&markers=color:red%7Clabel:L%7C${latitude},${longitude}&key=${mapsApiKey}`;
   };
 
+  const saveLocationHandler = async () => {
+    if (!pickedLocation || !user) {
+      Alert.alert("No location selected", "Please select a location first.");
+      return;
+    }
+
+    try {
+      await saveUserLocation(pickedLocation.latitude, pickedLocation.longitude, user.uid);
+      Alert.alert("Success", "Location saved successfully!");
+    } catch (error) {
+      Alert.alert("Error", "Failed to save location. Please try again.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>User Profile</Text>
@@ -92,10 +107,16 @@ export default function Profile() {
         />
 
         {pickedLocation && (
-          <Image
-            source={{ uri: getMapPreview()! }}
-            style={styles.mapPreview}
-          />
+          <>
+            <Image
+              source={{ uri: getMapPreview()! }}
+              style={styles.mapPreview}
+            />
+            <Button
+              title="Save Location"
+              onPress={saveLocationHandler}
+            />
+          </>
         )}
       </View>
     </View>
