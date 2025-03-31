@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Image, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import { saveUserLocation } from '../Firebase/firestoreHelper';
+import { saveUserLocation, getUserLocation } from '../Firebase/firestoreHelper';
 import { getAuth } from 'firebase/auth';
 
 export default function LocationManager() {
@@ -11,6 +11,23 @@ export default function LocationManager() {
   const [permissionResponse, requestPermission] = Location.useForegroundPermissions();
   const auth = getAuth();
   const user = auth.currentUser;
+
+  useEffect(() => {
+    const loadSavedLocation = async () => {
+      if (user) {
+        try {
+          const savedLocation = await getUserLocation(user.uid);
+          if (savedLocation) {
+            setPickedLocation(savedLocation);
+          }
+        } catch (error) {
+          console.error('Error loading saved location:', error);
+        }
+      }
+    };
+
+    loadSavedLocation();
+  }, [user]);
 
   const mapsApiKey = Constants.expoConfig?.extra?.googleMapsApiKey;
 

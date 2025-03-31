@@ -134,3 +134,18 @@ export const saveUserLocation = async (latitude: number, longitude: number, user
     throw error;
   }
 };
+
+export const getUserLocation = async (userId: string) => {
+  try {
+    const userRef = doc(database, 'users', userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (userDoc.exists() && userDoc.data().location) {
+      return userDoc.data().location;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting user location:', error);
+    throw error;
+  }
+};
