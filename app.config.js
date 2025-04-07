@@ -3,6 +3,9 @@ export default {
       name: "MyApp",
       slug: "my-app",
       version: "1.0.0",
+      android: {
+        package: "com.cc.myapp",
+      },
       extra: {
         googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
         eas: {
