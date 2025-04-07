@@ -24,7 +24,22 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pushToken, setPushToken] = useState<string | null>(null);
   const router = useRouter();
+  
+  useEffect(() => {
+    async function getExpoPushToken() {
+      try {
+        const token = await Notifications.getExpoPushTokenAsync({
+          projectId: Constants.expoConfig?.extra?.eas?.projectId,
+        });
+        setPushToken(token.data);
+      } catch (error) {
+        console.error('Error getting Expo push token:', error);
+      }
+    }
+    getExpoPushToken();
+  }, []);
 
   // Configure notifications and get push token
   useEffect(() => {
@@ -92,10 +107,8 @@ export default function App() {
         console.log('Notification response:', response);
         const { data } = response.notification.request.content;
         
-        // Handle navigation based on the data passed in notification
-        if (data?.screen === 'profile') {
-          router.push('/profile');
-        }
+        // Navigate to home screen when notification is tapped
+        router.navigate("/");
       }
     );
 
@@ -238,6 +251,38 @@ export default function App() {
       <View style={styles.headerSection}>
         <Text style={styles.headerText}>Welcome to My awesome app</Text>
         <Button title="ADD A GOAL" onPress={() => setIsModalVisible(true)} />
+        <View style={styles.spacer} />
+        <Button 
+          title="Send Push Notification" 
+          onPress={async () => {
+            try {
+              const token = await Notifications.getExpoPushTokenAsync({
+                projectId: "39aa660a-92ec-436c-8d32-bf8fd3e6dc8e",
+              });
+              
+              const response = await fetch("https://exp.host/--/api/v2/push/send", {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                  to: token.data,
+                  title: "Push Notification",
+                  body: "This is a push notification",
+                })
+              });
+
+              if (!response.ok) {
+                throw new Error('Failed to send notification');
+              }
+
+              Alert.alert("Success", "Push notification sent successfully");
+            } catch (error) {
+              console.error('Error sending notification:', error);
+              Alert.alert("Error", "Failed to send push notification");
+            }
+          }} 
+        />
       </View>
 
       {/* Goals List */}
@@ -339,5 +384,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     alignSelf: 'center',
     height: 10,
-  }
+  },
+  spacer: {
+    height: 10,
+  },
 });
