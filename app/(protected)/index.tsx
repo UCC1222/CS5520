@@ -24,7 +24,9 @@ Notifications.setNotificationHandler({
 export default function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pushToken, setPushToken] = useState<string | null>(null);
   const router = useRouter();
+  
 
   // Configure notifications and get push token
   useEffect(() => {
@@ -92,10 +94,8 @@ export default function App() {
         console.log('Notification response:', response);
         const { data } = response.notification.request.content;
         
-        // Handle navigation based on the data passed in notification
-        if (data?.screen === 'profile') {
-          router.push('/profile');
-        }
+        // Navigate to home screen when notification is tapped
+        router.navigate("/");
       }
     );
 
