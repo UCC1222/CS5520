@@ -27,6 +27,19 @@ export default function App() {
   const [pushToken, setPushToken] = useState<string | null>(null);
   const router = useRouter();
   
+  useEffect(() => {
+    async function getExpoPushToken() {
+      try {
+        const token = await Notifications.getExpoPushTokenAsync({
+          projectId: Constants.expoConfig?.extra?.eas?.projectId,
+        });
+        setPushToken(token.data);
+      } catch (error) {
+        console.error('Error getting Expo push token:', error);
+      }
+    }
+    getExpoPushToken();
+  }, []);
 
   // Configure notifications and get push token
   useEffect(() => {
