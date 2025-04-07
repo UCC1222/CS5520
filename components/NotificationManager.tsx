@@ -46,8 +46,7 @@ export default function NotificationManager() {
   return (
     <View style={styles.container}>
       <Button 
-        title="
-        Remind me to add my daily goal" 
+        title="Remind me to add my daily goal" 
         onPress={scheduleNotificationHandler}
       />
     </View>
