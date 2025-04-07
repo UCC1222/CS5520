@@ -5,6 +5,9 @@ export default {
       version: "1.0.0",
       extra: {
         googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        eas: {
+          projectId: "39aa660a-92ec-436c-8d32-bf8fd3e6dc8e",
+        },
       },
     },
   };
